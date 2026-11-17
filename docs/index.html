@@ -34,6 +34,9 @@
       .brand { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 750; letter-spacing: -.03em; }
       .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 12px; background: var(--green); color: white; font-size: 18px; }
       .top-note { color: var(--muted); font-size: 12px; }
+      .site-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+      .site-nav a { padding: 8px 10px; border-radius: 8px; color: #536258; font-size: 11px; font-weight: 700; text-decoration: none; }
+      .site-nav a:hover, .site-nav a[aria-current="page"] { background: var(--green-pale); color: var(--green-dark); }
       .hero { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
       .eyebrow { margin: 0 0 10px; color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
       h1 { margin: 0; font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -.055em; }
@@ -123,6 +126,8 @@
         .shell { padding: 20px 14px 36px; }
         .topbar { margin-bottom: 26px; }
         .top-note { display: none; }
+        .topbar { flex-wrap: wrap; }
+        .site-nav { width: 100%; }
         .hero { display: block; }
         .demo-badge { margin-top: 15px; }
         .layout { grid-template-columns: 1fr; }
@@ -142,7 +147,11 @@
     <main class="shell">
       <header class="topbar">
         <div class="brand"><span class="brand-mark" aria-hidden="true">S</span> SPUR <span class="muted">/</span> Sustainable planning</div>
-        <div class="top-note">A sustainability-first fashion demand planning prototype</div>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="./index.html" aria-current="page">Prototype</a>
+          <a href="./hm-research.html">H&amp;M research</a>
+          <a href="./how-to-use.html">How to use</a>
+        </nav>
       </header>
 
       <section class="hero" aria-labelledby="page-title">

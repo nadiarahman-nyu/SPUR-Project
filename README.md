@@ -5,6 +5,10 @@ fashion while keeping worker well-being in view.
 
 Project site: https://nadiarahman-nyu.github.io/SPUR-Project/
 
+- [Sustainable planning prototype](docs/index.html)
+- [H&M research notes](docs/hm-research.html)
+- [How to use the prototype](docs/how-to-use.html)
+
 ## Sustainable demand planning prototype
 
 Open [`docs/index.html`](docs/index.html) in a browser, or publish the `docs/`
