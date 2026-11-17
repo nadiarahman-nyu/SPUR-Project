@@ -3,12 +3,623 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SPUR Project</title>
+    <meta name="theme-color" content="#f5f7f3">
+    <title>SPUR | Sustainable demand planning</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17241f;
+        --muted: #64736c;
+        --line: #e2e8e1;
+        --paper: #fff;
+        --canvas: #f5f7f3;
+        --green: #176b4a;
+        --green-dark: #10553a;
+        --green-pale: #e8f3ec;
+        --amber: #9c6013;
+        --amber-pale: #fff4dc;
+        --red: #a63e36;
+        --red-pale: #faeae7;
+        --shadow: 0 12px 32px rgb(26 49 37 / 5%);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--canvas); color: var(--ink); }
+      button, input { font: inherit; }
+      a { color: var(--green-dark); }
+      button { cursor: pointer; }
+      .shell { max-width: 1440px; margin: 0 auto; padding: 28px 36px 56px; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 36px; }
+      .brand { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 750; letter-spacing: -.03em; }
+      .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 12px; background: var(--green); color: white; font-size: 18px; }
+      .top-note { color: var(--muted); font-size: 12px; }
+      .hero { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+      .eyebrow { margin: 0 0 10px; color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -.055em; }
+      .hero-copy { max-width: 680px; margin: 12px 0 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+      .demo-badge, .tag { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid #d5e5d9; border-radius: 999px; background: var(--green-pale); color: var(--green-dark); font-size: 11px; font-weight: 750; white-space: nowrap; }
+      .dot { width: 7px; height: 7px; border-radius: 50%; background: #368b5f; }
+      .layout { display: grid; grid-template-columns: minmax(280px, 350px) minmax(0, 1fr); align-items: start; gap: 20px; }
+      .card { border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
+      .inputs { padding: 20px; }
+      .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+      .section-heading h2, .section-heading h3 { margin: 0; font-size: 15px; letter-spacing: -.025em; }
+      .section-heading span { color: var(--muted); font-size: 11px; }
+      .field { margin: 0 0 14px; }
+      .field label { display: block; margin-bottom: 6px; color: #435149; font-size: 11px; font-weight: 700; }
+      .field input { width: 100%; min-height: 39px; padding: 9px 11px; border: 1px solid #dce4dc; border-radius: 9px; outline: none; background: white; color: var(--ink); font-size: 12px; }
+      .field input:focus { border-color: #69a283; box-shadow: 0 0 0 3px rgb(23 107 74 / 10%); }
+      .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .field-hint { display: block; margin-top: 5px; color: #859088; font-size: 10px; line-height: 1.45; }
+      .subsection { margin: 19px 0 13px; padding-top: 17px; border-top: 1px solid #edf0ec; }
+      .subsection-title { margin: 0 0 10px; font-size: 12px; }
+      .source-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+      .source-links a { padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; color: #4b5c53; font-size: 10px; text-decoration: none; }
+      .source-links a:hover { border-color: #8db49c; color: var(--green-dark); }
+      .upload-box { padding: 12px; border: 1px dashed #b6c8ba; border-radius: 10px; background: #fafcf9; }
+      .upload-box input { width: 100%; color: var(--muted); font-size: 11px; }
+      .upload-box p { margin: 8px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+      .button-row { display: flex; gap: 8px; margin-top: 16px; }
+      .button { min-height: 40px; padding: 9px 13px; border: 1px solid transparent; border-radius: 9px; background: var(--green); color: white; font-size: 12px; font-weight: 750; }
+      .button:hover { background: var(--green-dark); }
+      .button.secondary { border-color: var(--line); background: white; color: #405147; }
+      .button.secondary:hover { background: #f5f8f4; }
+      .button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #8fc1a3; outline-offset: 2px; }
+      .error { display: none; margin-top: 12px; padding: 10px; border-radius: 8px; background: var(--red-pale); color: var(--red); font-size: 11px; line-height: 1.5; }
+      .main-column { display: grid; gap: 16px; min-width: 0; }
+      .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+      .metric { min-height: 112px; padding: 16px; }
+      .metric-label { color: var(--muted); font-size: 11px; font-weight: 650; }
+      .metric-value { margin-top: 11px; font-size: clamp(21px, 2.4vw, 29px); font-weight: 760; letter-spacing: -.055em; }
+      .metric-foot { margin-top: 5px; color: #77847c; font-size: 10px; line-height: 1.4; }
+      .context-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; padding: 13px 17px; color: #536258; font-size: 10px; }
+      .context-strip strong { color: var(--ink); font-size: 11px; }
+      .context-strip a { margin-left: auto; font-size: 10px; }
+      .source-references { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; }
+      .source-references strong { margin-right: 3px; color: #536258; font-size: 10px; }
+      .source-references a, .source-references span { padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; color: #536258; font-size: 10px; text-decoration: none; }
+      .wide-card { padding: 20px; }
+      .chart { display: grid; gap: 14px; margin-top: 20px; }
+      .chart-row { display: grid; grid-template-columns: minmax(90px, 145px) 1fr 85px; align-items: center; gap: 12px; }
+      .chart-name { overflow: hidden; color: #435149; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+      .bar-track { height: 10px; overflow: hidden; border-radius: 99px; background: #edf1ec; }
+      .bar-pair { display: grid; gap: 3px; }
+      .bar-fill { height: 100%; border-radius: inherit; background: #67a884; }
+      .bar-fill.surplus { background: #dfa456; }
+      .chart-number { color: #47574e; font-size: 10px; text-align: right; }
+      .chart-legend { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 16px; color: var(--muted); font-size: 10px; }
+      .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+      .legend-swatch { width: 9px; height: 9px; border-radius: 3px; background: #67a884; }
+      .legend-swatch.gold { background: #dfa456; }
+      .table-wrap { overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; text-align: left; }
+      th { padding: 10px 9px; border-bottom: 1px solid var(--line); color: #78857d; font-size: 10px; font-weight: 700; white-space: nowrap; }
+      td { padding: 12px 9px; border-bottom: 1px solid #edf0ec; color: #435149; font-size: 11px; white-space: nowrap; }
+      tr:last-child td { border-bottom: 0; }
+      td:first-child { color: var(--ink); font-weight: 700; }
+      .status { display: inline-flex; padding: 5px 8px; border-radius: 99px; font-size: 9px; font-weight: 750; }
+      .status.reduce { background: var(--amber-pale); color: var(--amber); }
+      .status.replenish { background: var(--green-pale); color: var(--green-dark); }
+      .status.hold { background: #edf1ee; color: #5b6860; }
+      .decisions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+      .decision { padding: 13px; border: 1px solid #e8ede7; border-radius: 11px; background: #fbfcfa; }
+      .decision .tag { padding: 5px 7px; font-size: 9px; }
+      .decision h4 { margin: 10px 0 5px; font-size: 12px; }
+      .decision p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+      .notice { padding: 14px 16px; border: 1px solid #ead9b8; border-radius: 12px; background: #fffaf0; color: #705020; font-size: 11px; line-height: 1.6; }
+      .notice strong { color: #543908; }
+      .source-foot { color: #819087; font-size: 10px; line-height: 1.6; }
+      .source-foot a { color: #516e5b; }
+      .muted { color: var(--muted); }
+      .empty { padding: 26px 8px; color: var(--muted); font-size: 11px; text-align: center; }
+
+      @media (max-width: 1050px) {
+        .shell { padding-right: 22px; padding-left: 22px; }
+        .layout { grid-template-columns: minmax(260px, 310px) minmax(0, 1fr); gap: 14px; }
+        .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 760px) {
+        .shell { padding: 20px 14px 36px; }
+        .topbar { margin-bottom: 26px; }
+        .top-note { display: none; }
+        .hero { display: block; }
+        .demo-badge { margin-top: 15px; }
+        .layout { grid-template-columns: 1fr; }
+        .inputs { order: 2; }
+        .main-column { order: 1; }
+        .decisions { grid-template-columns: 1fr; }
+        .wide-card { padding: 16px; }
+      }
+      @media (max-width: 400px) {
+        .metrics { gap: 8px; }
+        .metric { min-height: 100px; padding: 12px; }
+        .chart-row { grid-template-columns: 82px 1fr 70px; gap: 8px; }
+      }
+    </style>
   </head>
   <body>
-    <main>
-      <h1>SPUR Project</h1>
-      <p>Coming soon.</p>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark" aria-hidden="true">S</span> SPUR <span class="muted">/</span> Sustainable planning</div>
+        <div class="top-note">A sustainability-first fashion demand planning prototype</div>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Plan less waste into the system</p>
+          <h1 id="page-title">Demand signals, <span style="color: var(--green)">better decisions.</span></h1>
+          <p class="hero-copy">Combine a brand’s reported business context with product-level sales, stock and public-interest signals. Explore how a cautious forecast can guide lower-waste inventory choices.</p>
+        </div>
+        <div class="demo-badge"><span class="dot"></span><span id="mode-label">Illustrative sample data</span></div>
+      </section>
+
+      <div class="layout">
+        <aside class="card inputs" aria-label="Data and forecast inputs">
+          <div class="section-heading">
+            <h2>Data &amp; assumptions</h2>
+            <span>Prototype inputs</span>
+          </div>
+
+          <div class="field">
+            <label for="brand-name">Brand / company</label>
+            <input id="brand-name" value="Sample Fashion Co." autocomplete="organization">
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="ticker">Ticker / CIK</label>
+              <input id="ticker" placeholder="e.g. HNNMY or CIK" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="period">Forecast period</label>
+              <input id="period" value="Next 4 weeks">
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Company context from filings</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="annual-sales">Reported revenue (optional)</label>
+                <input id="annual-sales" type="number" min="0" placeholder="Annual amount">
+              </div>
+              <div class="field">
+                <label for="company-inventory">Reported inventory (optional)</label>
+                <input id="company-inventory" type="number" min="0" placeholder="Amount">
+              </div>
+            </div>
+            <span class="field-hint">Enter amounts in the same currency / units used in the report.</span>
+            <div class="field">
+              <label for="filing-url">Source filing URL (optional)</label>
+              <input id="filing-url" type="url" placeholder="Paste annual report / 10-K link">
+              <span class="field-hint">Financial statements usually report company-wide totals, not item-level demand. Keep filing data separate from product sales.</span>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Public interest signals</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="search-change">Default search interest change (%)</label>
+                <input id="search-change" type="number" step="1" value="12">
+              </div>
+              <div class="field">
+                <label for="social-change">Default social interest change (%)</label>
+                <input id="social-change" type="number" step="1" value="18">
+              </div>
+            </div>
+            <div class="field">
+              <label for="signal-window">Signal comparison window</label>
+              <input id="signal-window" value="Last 28 days vs prior 28 days">
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="search-source">Search source URL (optional)</label>
+                <input id="search-source" type="url" placeholder="Google Trends query link">
+              </div>
+              <div class="field">
+                <label for="social-source">Social source URL (optional)</label>
+                <input id="social-source" type="url" placeholder="TikTok trend link">
+              </div>
+            </div>
+            <div class="field">
+              <label for="cost-change">Material cost change (%)</label>
+              <input id="cost-change" type="number" step="1" value="3">
+              <span class="field-hint">Enter comparable period-over-period changes. Signals are manually entered in this demo, not fetched or verified.</span>
+            </div>
+            <div class="source-links" aria-label="Public data source links">
+              <a href="https://trends.google.com/trends/" target="_blank" rel="noreferrer">Google Trends ↗</a>
+              <a href="https://ads.tiktok.com/business/creativecenter/" target="_blank" rel="noreferrer">TikTok Creative Center ↗</a>
+              <a href="https://www.sec.gov/edgar/search/" target="_blank" rel="noreferrer">SEC EDGAR ↗</a>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <h3 class="subsection-title">Product-level data</h3>
+            <div class="upload-box">
+              <input id="csv-file" type="file" accept=".csv,text/csv" aria-label="Upload product sales and inventory CSV">
+              <p>Upload CSV with columns: <code>product, inventory, units_sold</code>. Optional: <code>category, previous_units_sold, search_change_pct, social_change_pct, material_cost_change_pct, emissions_kg_per_unit, lead_time_days, source_url</code>.</p>
+            </div>
+            <span class="field-hint">For an actual brand, use authorized product/store data. Public filings alone cannot reliably create SKU-level forecasts.</span>
+          </div>
+
+          <div class="button-row">
+            <button class="button" id="run-button" type="button">Run forecast</button>
+            <button class="button secondary" id="sample-button" type="button">Load sample</button>
+          </div>
+          <div class="error" id="error-message" role="alert"></div>
+        </aside>
+
+        <section class="main-column" aria-label="Forecast results">
+          <div class="metrics" aria-live="polite">
+            <article class="card metric">
+              <div class="metric-label">Projected demand</div>
+              <div class="metric-value" id="metric-demand">—</div>
+              <div class="metric-foot" id="metric-period">units · next period</div>
+            </article>
+            <article class="card metric">
+              <div class="metric-label">Stock above forecast</div>
+              <div class="metric-value" id="metric-surplus">—</div>
+              <div class="metric-foot">units at risk of sitting unsold</div>
+            </article>
+            <article class="card metric">
+              <div class="metric-label">Potential stock emissions</div>
+              <div class="metric-value" id="metric-emissions">—</div>
+              <div class="metric-foot">rough exposure estimate, not avoided emissions</div>
+            </article>
+            <article class="card metric">
+              <div class="metric-label">Price / cost watch</div>
+              <div class="metric-value" id="metric-price">—</div>
+              <div class="metric-foot" id="metric-price-foot">cost and interest direction only</div>
+            </article>
+          </div>
+
+          <div class="card context-strip" id="filing-context" aria-live="polite"></div>
+          <div class="card source-references" id="source-references" aria-label="Input source references"></div>
+
+          <article class="card wide-card">
+            <div class="section-heading">
+              <div>
+                <h2>Forecast vs. current inventory</h2>
+                <span>Units per product for <span id="chart-period">the next period</span></span>
+              </div>
+              <span id="updated-time">Sample run</span>
+            </div>
+            <div class="chart" id="chart" role="img" aria-label="Bar chart comparing forecast demand and inventory"></div>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="legend-swatch"></span>Forecast demand</span>
+              <span class="legend-item"><span class="legend-swatch gold"></span>Current inventory</span>
+            </div>
+          </article>
+
+          <article class="card wide-card">
+            <div class="section-heading">
+              <div>
+                <h2>Product decisions</h2>
+                <span>Conservative rules designed to avoid unnecessary production</span>
+              </div>
+              <span id="product-count"></span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Forecast</th>
+                    <th scope="col">Uncertainty range</th>
+                    <th scope="col">Suggested action</th>
+                  </tr>
+                </thead>
+                <tbody id="results-table"></tbody>
+              </table>
+              <div class="empty" id="empty-table" hidden>No product rows yet. Load the sample or upload a CSV.</div>
+            </div>
+            <div class="decisions" id="decision-cards"></div>
+          </article>
+
+          <div class="notice">
+            <strong>Prototype, not a live company data feed.</strong> Sample numbers are fictional. The browser does not scrape Google, TikTok, SEC filings or other sites; CSVs are processed locally and not uploaded. Public search/social signals must be entered by a researcher and checked for comparability; use official APIs and their terms if building a production integration. Non-US brands may publish annual reports or Form 20-F rather than a 10-K. Price pressure is directional context, not a selling-price forecast. Never use a forecast to justify unsafe overtime, unfair pay or impossible supplier lead times. Never use a forecast to justify unsafe overtime, unfair pay or impossible supplier lead times.
+          </div>
+          <div class="source-foot">
+            Method: a transparent baseline combines latest-period sales with clipped historical growth (25% weight), search-interest change (20%) and social-interest change (10%), then shows a ±20% planning range. This is a classroom prototype, not a validated machine-learning model.
+            The sustainability framing is informed by <a href="https://www.ideo.com/case-study/h-and-m-kigumi" target="_blank" rel="noreferrer">IDEO’s H&amp;M inventory case study</a> and H&amp;M’s <a href="https://hmgroup.com/sustainability/climate/" target="_blank" rel="noreferrer">climate reporting</a>. A forecast alone does not demonstrate reduced production, waste or emissions.
+          </div>
+        </section>
+      </div>
     </main>
+
+    <script>
+      "use strict";
+
+      const sampleProducts = [
+        { product: "Everyday cotton tee", category: "Tops", inventory: 760, units_sold: 520, previous_units_sold: 480, search_change_pct: 8, social_change_pct: 11, material_cost_change_pct: 3, emissions_kg_per_unit: 2.4, lead_time_days: 28 },
+        { product: "Relaxed denim jean", category: "Denim", inventory: 310, units_sold: 410, previous_units_sold: 350, search_change_pct: 21, social_change_pct: 26, material_cost_change_pct: 6, emissions_kg_per_unit: 7.8, lead_time_days: 42 },
+        { product: "Linen blend shirt", category: "Tops", inventory: 480, units_sold: 300, previous_units_sold: 330, search_change_pct: -5, social_change_pct: 2, material_cost_change_pct: 4, emissions_kg_per_unit: 3.1, lead_time_days: 35 },
+        { product: "Knit cardigan", category: "Knitwear", inventory: 690, units_sold: 260, previous_units_sold: 295, search_change_pct: -12, social_change_pct: -8, material_cost_change_pct: 2, emissions_kg_per_unit: 5.2, lead_time_days: 49 },
+        { product: "Recycled-fiber tote", category: "Accessories", inventory: 190, units_sold: 150, previous_units_sold: 125, search_change_pct: 15, social_change_pct: 9, material_cost_change_pct: 1, emissions_kg_per_unit: 1.2, lead_time_days: 21 }
+      ];
+
+      let products = sampleProducts.map((row) => ({ ...row }));
+      let isSampleData = true;
+      const byId = (id) => document.getElementById(id);
+      const number = (value, fallback = 0) => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : fallback;
+      };
+      const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
+      const rounded = (value) => Math.round(value).toLocaleString();
+      const safeText = (value) => String(value ?? "").trim();
+
+      function escapeHtml(value) {
+        return safeText(value).replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        })[character]);
+      }
+
+      function externalLink(label, value) {
+        try {
+          const parsedUrl = new URL(safeText(value));
+          if (parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:") {
+            return `<a href="${escapeHtml(parsedUrl.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)} ↗</a>`;
+          }
+        } catch {
+          return "";
+        }
+        return "";
+      }
+
+      function forecastProduct(product) {
+        const current = Math.max(0, number(product.units_sold));
+        const previous = Math.max(0, number(product.previous_units_sold));
+        const historicalTrend = previous > 0 ? clamp((current - previous) / previous, -0.5, 0.5) : 0;
+        const searchChange = (product.search_change_pct == null ? number(byId("search-change").value) : number(product.search_change_pct)) / 100;
+        const socialChange = (product.social_change_pct == null ? number(byId("social-change").value) : number(product.social_change_pct)) / 100;
+        const growth = clamp((historicalTrend * 0.25) + (searchChange * 0.2) + (socialChange * 0.1), -0.5, 0.5);
+        const demand = Math.max(0, Math.round(current * (1 + growth)));
+        const stock = Math.max(0, number(product.inventory));
+        const target = Math.ceil(demand * 1.05);
+        const surplus = Math.max(0, stock - target);
+        const replenish = Math.max(0, target - stock);
+        const emissions = Math.max(0, number(product.emissions_kg_per_unit));
+        return {
+          ...product,
+          demand,
+          low: Math.max(0, Math.floor(demand * 0.8)),
+          high: Math.ceil(demand * 1.2),
+          surplus,
+          replenish,
+          stock,
+          emissionsExposure: surplus * emissions,
+          growth
+        };
+      }
+
+      function actionFor(row) {
+        if (row.surplus > Math.max(10, row.demand * 0.15)) {
+          return { name: "Pause / reduce orders", className: "reduce", detail: `Avoid a new order; test store transfers, resale or repair before producing more. About ${rounded(row.surplus)} units exceed a 5% planning buffer.` };
+        }
+        if (row.replenish > Math.max(10, row.demand * 0.1)) {
+          return { name: "Replenish cautiously", className: "replenish", detail: `Check stock at nearby locations and confirmed demand first. If still needed, cap replenishment near ${rounded(row.replenish)} units and review supplier lead time.` };
+        }
+        return { name: "Hold & review", className: "hold", detail: "Keep current orders unchanged for now; check sell-through and forecast again before committing additional production." };
+      }
+
+      function render() {
+        const results = products.map(forecastProduct);
+        const totalDemand = results.reduce((sum, row) => sum + row.demand, 0);
+        const totalSurplus = results.reduce((sum, row) => sum + row.surplus, 0);
+        const totalExposure = results.reduce((sum, row) => sum + row.emissionsExposure, 0);
+        const maxBar = Math.max(1, ...results.map((row) => Math.max(row.demand, row.stock)));
+        const averageSignal = (field, fallback) => {
+          const values = products.map((product) => product[field]).filter((value) => typeof value === "number" && Number.isFinite(value));
+          return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : fallback;
+        };
+        const searchChange = averageSignal("search_change_pct", number(byId("search-change").value));
+        const socialChange = averageSignal("social_change_pct", number(byId("social-change").value));
+        const costChange = averageSignal("material_cost_change_pct", number(byId("cost-change").value));
+        const interest = searchChange + socialChange;
+        const pricePressure = costChange > 5 && interest > 10 ? "High" : costChange > 0 || interest > 10 ? "Watch" : "Stable";
+
+        byId("metric-demand").textContent = rounded(totalDemand);
+        byId("metric-surplus").textContent = rounded(totalSurplus);
+        byId("metric-emissions").textContent = totalExposure >= 1000 ? `${(totalExposure / 1000).toFixed(1)} t` : `${rounded(totalExposure)} kg`;
+        byId("metric-price").textContent = pricePressure;
+        byId("metric-price-foot").textContent = `material costs ${costChange >= 0 ? "+" : ""}${costChange}% · demand interest ${interest >= 0 ? "+" : ""}${interest}%`;
+        byId("metric-period").textContent = `units · ${safeText(byId("period").value) || "next period"}`;
+        byId("chart-period").textContent = safeText(byId("period").value) || "the next period";
+        byId("product-count").textContent = `${results.length} product${results.length === 1 ? "" : "s"}`;
+        byId("mode-label").textContent = isSampleData ? "Illustrative sample data" : "User-supplied data";
+        byId("empty-table").hidden = results.length !== 0;
+        const revenue = number(byId("annual-sales").value);
+        const companyInventory = number(byId("company-inventory").value);
+        const ticker = safeText(byId("ticker").value);
+        const contextLink = safeText(byId("filing-url").value);
+        const reportLink = externalLink("Open source filing", contextLink);
+        byId("filing-context").innerHTML = `<span>Company-level filing context${safeText(byId("brand-name").value) ? ` · ${escapeHtml(safeText(byId("brand-name").value))}` : ""}${ticker ? ` · ${escapeHtml(ticker)}` : ""}</span>
+          <span>Revenue: <strong>${byId("annual-sales").value ? rounded(revenue) : "not entered"}</strong></span>
+          <span>Inventory: <strong>${byId("company-inventory").value ? rounded(companyInventory) : "not entered"}</strong></span>
+          ${reportLink}`;
+        const references = [
+          externalLink("Company filing", contextLink),
+          externalLink("Search signal", byId("search-source").value),
+          externalLink("Social signal", byId("social-source").value),
+          ...products.map((product) => externalLink(`${safeText(product.product)} data`, product.source_url))
+        ].filter(Boolean);
+        byId("source-references").innerHTML = `<strong>Input sources · ${escapeHtml(safeText(byId("signal-window").value) || "comparison window not set")}</strong>
+          ${references.length ? references.join("") : "<span>No source URLs added</span>"}`;
+
+        byId("chart").innerHTML = results.length ? results.map((row) => {
+          const demandWidth = Math.max(row.demand > 0 ? 2 : 0, (row.demand / maxBar) * 100);
+          const inventoryWidth = (row.stock / maxBar) * 100;
+          return `<div class="chart-row">
+            <span class="chart-name" title="${escapeHtml(row.product)}">${escapeHtml(row.product)}</span>
+            <div class="bar-pair" aria-hidden="true">
+              <div class="bar-track"><div class="bar-fill" style="width:${demandWidth.toFixed(1)}%"></div></div>
+              <div class="bar-track"><div class="bar-fill surplus" style="width:${inventoryWidth.toFixed(1)}%"></div></div>
+            </div>
+            <span class="chart-number">${rounded(row.demand)} demand</span>
+          </div>`;
+        }).join("") : `<div class="empty">No forecast data to display.</div>`;
+
+        byId("results-table").innerHTML = results.map((row) => {
+          const action = actionFor(row);
+          return `<tr>
+            <td>${escapeHtml(row.product)}</td>
+            <td>${rounded(row.stock)}</td>
+            <td>${rounded(row.demand)}</td>
+            <td>${rounded(row.low)}–${rounded(row.high)}</td>
+            <td><span class="status ${action.className}">${action.name}</span></td>
+          </tr>`;
+        }).join("");
+
+        const surplusRows = results.filter((row) => row.surplus > Math.max(10, row.demand * 0.15));
+        const lowRows = results.filter((row) => row.replenish > Math.max(10, row.demand * 0.1));
+        const decisions = [];
+        if (surplusRows.length) {
+          const names = surplusRows.slice(0, 3).map((row) => escapeHtml(row.product)).join(", ");
+          decisions.push({
+            label: "Prevent overproduction",
+            title: `Review ${surplusRows.length} product${surplusRows.length === 1 ? "" : "s"} before ordering`,
+            text: `${names}${surplusRows.length > 3 ? ", and others" : ""} have inventory above the planning buffer. Consider transfers, resale or repair, and pause repeat orders until sell-through is checked.`
+          });
+        } else {
+          decisions.push({
+            label: "Demand aligned",
+            title: "No large surplus flagged",
+            text: "Maintain the current plan; validate results against actual sell-through before increasing production."
+          });
+        }
+        if (lowRows.length) {
+          const names = lowRows.slice(0, 3).map((row) => escapeHtml(row.product)).join(", ");
+          decisions.push({
+            label: "Protect availability",
+            title: `Check ${lowRows.length} potential stock gap${lowRows.length === 1 ? "" : "s"}`,
+            text: `${names}${lowRows.length > 3 ? ", and others" : ""} may need stock. Transfer from other locations or confirm demand first; avoid automatic production increases.`
+          });
+        } else {
+          decisions.push({
+            label: "Price & cost watch",
+            title: `${pricePressure} directional pressure`,
+            text: `Material input is ${costChange >= 0 ? "up" : "down"} ${Math.abs(costChange)}% and combined interest is ${interest >= 0 ? "up" : "down"} ${Math.abs(interest)}%. This is not a prediction of retail prices or a recommendation to discount.`
+          });
+        }
+        byId("decision-cards").innerHTML = decisions.map((decision) => `
+          <article class="decision">
+            <span class="tag">${decision.label}</span>
+            <h4>${decision.title}</h4>
+            <p>${decision.text}</p>
+          </article>`).join("");
+        byId("updated-time").textContent = `Updated ${new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(new Date())}`;
+      }
+
+      function parseCsv(text) {
+        const rows = [];
+        let row = [];
+        let cell = "";
+        let quoted = false;
+        for (let index = 0; index < text.length; index += 1) {
+          const character = text[index];
+          if (character === '"' && quoted && text[index + 1] === '"') {
+            cell += '"';
+            index += 1;
+          } else if (character === '"') {
+            quoted = !quoted;
+          } else if (character === "," && !quoted) {
+            row.push(cell.trim());
+            cell = "";
+          } else if ((character === "\n" || character === "\r") && !quoted) {
+            if (character === "\r" && text[index + 1] === "\n") index += 1;
+            row.push(cell.trim());
+            if (row.some((value) => value !== "")) rows.push(row);
+            row = [];
+            cell = "";
+          } else {
+            cell += character;
+          }
+        }
+        if (quoted) throw new Error("The CSV has an unclosed quoted field.");
+        row.push(cell.trim());
+        if (row.some((value) => value !== "")) rows.push(row);
+        if (rows.length < 2) throw new Error("The CSV needs a header row and at least one product row.");
+        const headers = rows[0].map((header) => header.toLowerCase().replace(/^\uFEFF/, ""));
+        const required = ["product", "inventory", "units_sold"];
+        const missing = required.filter((header) => !headers.includes(header));
+        if (missing.length) throw new Error(`Missing required column${missing.length > 1 ? "s" : ""}: ${missing.join(", ")}.`);
+        const data = rows.slice(1).map((values, index) => {
+          const record = Object.fromEntries(headers.map((header, column) => [header, values[column] ?? ""]));
+          const isBlank = (column) => record[column] == null || record[column] === "";
+          if (!safeText(record.product)) throw new Error(`Product name is missing on CSV row ${index + 2}.`);
+          for (const column of ["inventory", "units_sold", "previous_units_sold", "search_change_pct", "social_change_pct", "material_cost_change_pct", "emissions_kg_per_unit", "lead_time_days"]) {
+            if (!isBlank(column) && !Number.isFinite(Number(record[column]))) throw new Error(`Invalid number in "${column}" on CSV row ${index + 2}.`);
+          }
+          for (const column of ["inventory", "units_sold", "previous_units_sold", "emissions_kg_per_unit", "lead_time_days"]) {
+            if (!isBlank(column) && Number(record[column]) < 0) throw new Error(`"${column}" cannot be negative on CSV row ${index + 2}.`);
+          }
+          return {
+            product: safeText(record.product),
+            category: safeText(record.category),
+            inventory: number(record.inventory),
+            units_sold: number(record.units_sold),
+            previous_units_sold: isBlank("previous_units_sold") ? 0 : number(record.previous_units_sold),
+            search_change_pct: isBlank("search_change_pct") ? null : number(record.search_change_pct),
+            social_change_pct: isBlank("social_change_pct") ? null : number(record.social_change_pct),
+            material_cost_change_pct: isBlank("material_cost_change_pct") ? null : number(record.material_cost_change_pct),
+            emissions_kg_per_unit: isBlank("emissions_kg_per_unit") ? 0 : number(record.emissions_kg_per_unit),
+            lead_time_days: isBlank("lead_time_days") ? 0 : number(record.lead_time_days),
+            source_url: safeText(record.source_url)
+          };
+        });
+        return data;
+      }
+
+      function showError(message) {
+        const error = byId("error-message");
+        error.textContent = message;
+        error.style.display = "block";
+      }
+
+      byId("run-button").addEventListener("click", () => {
+        byId("error-message").style.display = "none";
+        const file = byId("csv-file").files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onerror = () => showError("Could not read the selected CSV file.");
+          reader.onload = () => {
+            try {
+              products = parseCsv(String(reader.result));
+              isSampleData = false;
+              byId("mode-label").textContent = "User-supplied data";
+              render();
+            } catch (error) {
+              showError(error instanceof Error ? error.message : "Could not parse this CSV file.");
+            }
+          };
+          reader.readAsText(file);
+          return;
+        }
+        render();
+      });
+
+      byId("sample-button").addEventListener("click", () => {
+        products = sampleProducts.map((row) => ({ ...row }));
+        isSampleData = true;
+        byId("brand-name").value = "Sample Fashion Co.";
+        byId("annual-sales").value = "";
+        byId("company-inventory").value = "";
+        byId("filing-url").value = "";
+        byId("search-source").value = "";
+        byId("social-source").value = "";
+        byId("signal-window").value = "Last 28 days vs prior 28 days";
+        byId("csv-file").value = "";
+        byId("search-change").value = "12";
+        byId("social-change").value = "18";
+        byId("cost-change").value = "3";
+        byId("error-message").style.display = "none";
+        render();
+      });
+
+      render();
+    </script>
   </body>
 </html>
